@@ -1,0 +1,6 @@
+#tank count at initialization
+initTankCount=10
+tankSpeed=3
+bulletSpeed=6
+gameWidth=1080
+gameHeight=720
