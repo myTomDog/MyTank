@@ -1,15 +1,16 @@
-package com.mashibing.tank;
+package com.mashibing.tank.factory;
 
+import com.mashibing.tank.Explode;
+import com.mashibing.tank.Tank;
+import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.factory.BaseBullet;
-import com.mashibing.tank.factory.BaseTank;
 import com.mashibing.tank.util.PropertyMgr;
 import com.mashibing.tank.util.ResourceMgr;
 
 import java.awt.*;
 
-public class Bullet extends BaseBullet {
+public class RectBullet extends BaseBullet {
     private static final int SPEED = PropertyMgr.getInt("bulletSpeed");
     public static final int WIDTH = ResourceMgr.bulletD.getWidth();
     public static final int HEIGHT = ResourceMgr.bulletD.getHeight();
@@ -22,7 +23,7 @@ public class Bullet extends BaseBullet {
     private Group group;
     private TankFrame tf;
 
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public RectBullet(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -40,23 +41,15 @@ public class Bullet extends BaseBullet {
     @Override
     public void paint(Graphics g) {
 
-        if (!living || this.x > TankFrame.GAME_WIDTH || this.y > TankFrame.GAME_HEIGHT){
+        if (!living || this.x > TankFrame.GAME_WIDTH || this.y > TankFrame.GAME_HEIGHT) {
             tf.bullets.remove(this);
         }
-        switch (dir){
-            case LEFT:
-                g.drawImage(ResourceMgr.bulletL, x, y, null);
-                break;
-            case UP:
-                g.drawImage(ResourceMgr.bulletU, x, y, null);
-                break;
-            case RIGHT:
-                g.drawImage(ResourceMgr.bulletR, x, y, null);
-                break;
-            case DOWN:
-                g.drawImage(ResourceMgr.bulletD, x, y, null);
-                break;
-        }
+
+        Color c = g.getColor();
+        g.setColor(Color.yellow);
+        g.fillRect(x, y, 20, 20);
+        g.setColor(c);
+
         move();
     }
 
@@ -80,13 +73,14 @@ public class Bullet extends BaseBullet {
         rect.x = this.x;
         rect.y = this.y;
 
-        if (x < 0 || y < 0 || x > TankFrame.GAME_WIDTH || y > TankFrame.GAME_HEIGHT){
+        if (x < 0 || y < 0 || x > TankFrame.GAME_WIDTH || y > TankFrame.GAME_HEIGHT) {
             living = false;
         }
     }
 
     /**
      * 碰撞检测
+     *
      * @param tank
      */
     @Override
@@ -95,7 +89,7 @@ public class Bullet extends BaseBullet {
         if (this.group == tank.group) return;
 
         // 判断是否相交
-        if (rect.intersects(tank.rect)){
+        if (rect.intersects(tank.rect)) {
             tank.die();
             this.die();
             int eX = tank.x + Tank.WIDTH / 2 - Explode.WIDTH / 2;

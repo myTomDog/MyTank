@@ -1,10 +1,10 @@
-package com.mashibing.tank;
+package com.mashibing.tank.factory;
 
+import com.mashibing.tank.FireStrategy;
+import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.factory.BaseTank;
 import com.mashibing.tank.util.PropertyMgr;
-import com.mashibing.tank.util.ResourceMgr;
 
 import java.awt.*;
 import java.util.Random;
@@ -12,11 +12,11 @@ import java.util.Random;
 import static com.mashibing.tank.TankFrame.GAME_HEIGHT;
 import static com.mashibing.tank.TankFrame.GAME_WIDTH;
 
-public class Tank extends BaseTank {
+public class RectTank extends BaseTank {
 
     private Random random = new Random();
 
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public RectTank(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -48,20 +48,10 @@ public class Tank extends BaseTank {
         if (!living || this.x > GAME_WIDTH || this.y > GAME_HEIGHT) {
             tf.tanks.remove(this);
         }
-        switch (dir) {
-            case LEFT:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.goodTankL : ResourceMgr.badTankL, x, y, null);
-                break;
-            case UP:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.goodTankU : ResourceMgr.badTankU, x, y, null);
-                break;
-            case RIGHT:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.goodTankR : ResourceMgr.badTankR, x, y, null);
-                break;
-            case DOWN:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.goodTankD : ResourceMgr.badTankD, x, y, null);
-                break;
-        }
+        Color c = g.getColor();
+        g.setColor(group == Group.GOOD? Color.green:Color.blue);
+        g.fillRect(x, y, 50,50);
+        g.setColor(c);
         move();
     }
 
@@ -106,16 +96,15 @@ public class Tank extends BaseTank {
         if (y < 28) {
             y = 28;
         }
-        if (x > GAME_WIDTH - Tank.WIDTH - 2) {
-            x = GAME_WIDTH - Tank.WIDTH - 2;
+        if (x > GAME_WIDTH - RectTank.WIDTH - 2) {
+            x = GAME_WIDTH - RectTank.WIDTH - 2;
         }
-        if (y > GAME_HEIGHT - Tank.HEIGHT - 2) {
-            y = GAME_HEIGHT - Tank.HEIGHT - 2;
+        if (y > GAME_HEIGHT - RectTank.HEIGHT - 2) {
+            y = GAME_HEIGHT - RectTank.HEIGHT - 2;
         }
     }
 
     private void randomDir() {
         this.dir = Dir.values()[random.nextInt(4)];
     }
-
 }
