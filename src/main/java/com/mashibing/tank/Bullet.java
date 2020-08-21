@@ -1,6 +1,5 @@
-package com.mashibing.tank.entity;
+package com.mashibing.tank;
 
-import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
 import com.mashibing.tank.util.PropertyMgr;
@@ -19,27 +18,27 @@ public class Bullet {
     private Dir dir;
     private boolean living = true;
     private Group group;
-    private TankFrame tf;
+    private GameModel gm;
 
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public Bullet(int x, int y, Dir dir, Group group, GameModel gm) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tf = tf;
+        this.gm = gm;
 
         rect.x = this.x;
         rect.y = this.y;
         rect.width = WIDTH;
         rect.height = HEIGHT;
 
-        tf.bullets.add(this);
+        gm.bullets.add(this);
     }
 
     public void paint(Graphics g) {
 
         if (!living || this.x > TankFrame.GAME_WIDTH || this.y > TankFrame.GAME_HEIGHT) {
-            tf.bullets.remove(this);
+            gm.bullets.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -98,7 +97,7 @@ public class Bullet {
             this.die();
             int eX = tank.x + Tank.WIDTH / 2 - Explode.WIDTH / 2;
             int eY = tank.y + Tank.HEIGHT / 2 - Explode.HEIGHT / 2;
-            new Explode(eX, eY, tf);
+            new Explode(eX, eY, gm);
         }
     }
 

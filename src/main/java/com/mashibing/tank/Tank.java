@@ -1,9 +1,7 @@
-package com.mashibing.tank.entity;
+package com.mashibing.tank;
 
-import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.util.Audio;
 import com.mashibing.tank.util.PropertyMgr;
 import com.mashibing.tank.util.ResourceMgr;
 
@@ -15,55 +13,52 @@ import static com.mashibing.tank.TankFrame.GAME_WIDTH;
 
 public class Tank {
 
-    public static final int SPEED = PropertyMgr.getInt("tankSpeed");
     public int x;
     public int y;
-    public Dir dir;
-    public TankFrame tf;
     public Group group;
-    public boolean living = true;
-    public boolean moving = true;
+    public Dir dir;
+    public FireStrategy fs;
+    public GameModel gm;
     public Rectangle rect = new Rectangle();
+
+    private boolean living = true;
+    private boolean moving = true;
+    private Random random = new Random();
+
+    public static final int SPEED = PropertyMgr.getInt("tankSpeed");
     public static final int WIDTH = ResourceMgr.goodTankU.getWidth();
     public static final int HEIGHT = ResourceMgr.goodTankU.getHeight();
 
-    public final void setDir(Dir dir) {
-        this.dir = dir;
-    }
-
-    public final void fire() {
-        int bX = this.x + Tank.WIDTH / 2 - Bullet.WIDTH / 2;
-        int bY = this.y + Tank.HEIGHT / 2 - Bullet.HEIGHT / 2;
-        new Bullet(bX, bY, this.dir, this.group, this.tf);
-        if (this.group == Group.GOOD) new Thread(() -> new Audio("Audio/tank_fire.wav").play()).start();
-    }
-
-    public final void die() {
-        this.living = false;
-    }
-
-    public final void setMoving(boolean moving) {
-        this.moving = moving;
-    }
-
-    private Random random = new Random();
-
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public Tank(int x, int y, Dir dir, Group group, GameModel gm) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tf = tf;
+        this.gm = gm;
 
         rect.x = this.x;
         rect.y = this.y;
         rect.width = WIDTH;
         rect.height = HEIGHT;
+
+        if (group == Group.GOOD) {
+            try {
+                fs = (FireStrategy) Class.forName(PropertyMgr.getString("goodFS")).getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                fs = (FireStrategy) Class.forName(PropertyMgr.getString("badFS")).getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void paint(Graphics g) {
         if (!living || this.x > GAME_WIDTH || this.y > GAME_HEIGHT) {
-            tf.tanks.remove(this);
+            gm.tanks.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -80,6 +75,18 @@ public class Tank {
                 break;
         }
         move();
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public void fire() {
+        fs.fire(this);
+    }
+
+    public void die() {
+        this.living = false;
     }
 
     private void move() {
