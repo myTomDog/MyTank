@@ -16,11 +16,13 @@ import java.util.List;
 
 public class TankFrame extends Frame {
 
-    private BaseTank myTank = new Tank(200, 600, Dir.UP, Group.GOOD,this);
+//    private BaseTank myTank = new Tank(200, 600, Dir.UP, Group.GOOD,this);
+    private BaseTank myTank = new RectTank(200, 600, Dir.UP, Group.GOOD,this);
     public List<BaseBullet> bullets = new ArrayList<>();
     public List<BaseTank> tanks = new ArrayList<>();
     public List<BaseExplode> explodes = new ArrayList<>();
-    public GameFactory gf = new DefaultFactory();
+//    public GameFactory gf = new DefaultFactory();
+    public GameFactory gf = new RectFactory();
 
     public static final int GAME_WIDTH = PropertyMgr.getInt("gameWidth"), GAME_HEIGHT = PropertyMgr.getInt("gameHeight");
 
